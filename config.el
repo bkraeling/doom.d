@@ -32,9 +32,18 @@
 (setq org-directory "~/Documents/org/")
 
 (after! org
-  (setq org-agenda-files '("~/Documents/org/agenda.org"))
   (setq org-log-done 'time)
 )
+
+;;------------------------------------------------------------------------------
+;; Load org agenda files
+;;------------------------------------------------------------------------------
+(load-library "find-lisp")
+
+(add-hook 'org-agenda-mode-hook (lambda ()
+(setq org-agenda-files
+(find-lisp-find-files "~/Documents/org" "\.org$"))
+))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
