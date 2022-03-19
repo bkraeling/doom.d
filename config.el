@@ -29,7 +29,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Documents/org/")
+(setq org-directory "~/Documents/orgmode/")
 
 (after! org
   (setq org-log-done 'time)
@@ -42,8 +42,21 @@
 
 (add-hook 'org-agenda-mode-hook (lambda ()
 (setq org-agenda-files
-(find-lisp-find-files "~/Documents/org" "\.org$"))
+(find-lisp-find-files "~/Documents/orgmode" "\.org$"))
 ))
+
+;;------------------------------------------------------------------------------
+;; Org Roam configuration
+;;------------------------------------------------------------------------------
+
+(use-package org-roam
+  :custom
+  (org-roam-directory "~/Documents/orgmode")
+  (org-roam-dailies-directory "journals/")
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      #'org-roam-capture--get-point "%?"
+      :file-name "pages/${slug}" :head "#+title: ${title}\n" :unnarrowed t))))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
