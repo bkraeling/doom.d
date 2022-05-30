@@ -42,7 +42,7 @@
 
 (add-hook 'org-agenda-mode-hook (lambda ()
 (setq org-agenda-files
-(find-lisp-find-files "~/Documents/orgmode" "\.org$"))
+(find-lisp-find-files "~/Documents/org" "\.org$"))
 ))
 
 ;;------------------------------------------------------------------------------
@@ -51,7 +51,7 @@
 
 (use-package org-roam
   :custom
-  (org-roam-directory "~/Documents/orgmode")
+  (org-roam-directory "~/Documents/org")
   (org-roam-dailies-directory "journals/")
   (org-roam-capture-templates
    '(("d" "default" plain
@@ -62,6 +62,45 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                               (file+headline "~/Documents/org/inbox.org" "Tasks")
+                               "* TODO %i%?")
+                              ("T" "Tickler" entry
+                               (file+headline "~/Documents/org/tickler.org" "Tickler")
+                               "* %i%? \n %U")))
+
+(setq org-refile-targets '(("~/Documents/org/gtd.org" :maxlevel . 3)
+                           ("~/Documents/org/someday.org" :level . 1)
+                           ("~/Documents/org/tickler.org" :maxlevel . 2)))
+
+(setq org-agenda-custom-commands
+      '(("o" "At the office" tags-todo "@office"
+         ((org-agenda-overriding-header "Office")))))
+
+(setq org-agenda-custom-commands
+      '(("o" "At the office" tags-todo "@office"
+         ((org-agenda-overriding-header "Office")
+          (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo)
+      (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+        (when (org-current-is-todo)
+          (setq should-skip-entry t))))
+    (when should-skip-entry
+      (or (outline-next-heading)
+          (goto-char (point-max))))))
+
+(defun org-current-is-todo ()
+  (string= "TODO" (org-get-todo-state)))
+
+
+(add-hook 'after-init-hook #'global-prettier-mode)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
